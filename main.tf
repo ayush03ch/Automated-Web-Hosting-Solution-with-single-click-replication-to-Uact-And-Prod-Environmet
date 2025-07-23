@@ -1,13 +1,17 @@
+# Provider Configuration
 provider "azurerm" {
   features {}
 }
 
 
+# Resource Group
 resource "azurerm_resource_group" "main" {
   name     = "rg-${var.env_name}"
   location = var.location
 }
 
+
+# Virtual Network
 resource "azurerm_virtual_network" "main" {
   name                = "vnet-${var.env_name}"
   address_space       = ["10.0.0.0/16"]
@@ -15,6 +19,8 @@ resource "azurerm_virtual_network" "main" {
   resource_group_name = azurerm_resource_group.main.name
 }
 
+
+# Subnet
 resource "azurerm_subnet" "main" {
   name                 = "subnet-${var.env_name}"
   resource_group_name  = azurerm_resource_group.main.name
@@ -22,6 +28,8 @@ resource "azurerm_subnet" "main" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
+
+# Network Security Group (NSG)
 resource "azurerm_network_security_group" "nsg" {
   name                = "nsg-${var.env_name}"
   location            = var.location
@@ -52,6 +60,8 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
+
+# Public IP for Load Balancer
 resource "azurerm_public_ip" "lb" {
   name                = "lb-pip-${var.env_name}"
   location            = var.location
@@ -60,6 +70,8 @@ resource "azurerm_public_ip" "lb" {
   sku                 = "Standard"
 }
 
+
+# Load Balancer
 resource "azurerm_lb" "main" {
   name                = "lb-${var.env_name}"
   location            = var.location
@@ -72,13 +84,15 @@ resource "azurerm_lb" "main" {
   }
 }
 
+
+# Associate NSG with Subnet
 resource "azurerm_subnet_network_security_group_association" "subnet_nsg" {
   subnet_id                 = azurerm_subnet.main.id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
 
-# Create NICs for each VM
+# Network Interfaces (NICs) for Virtual Machines
 resource "azurerm_network_interface" "vm_nic" {
   count               = var.vm_count
   name                = "nic-${var.env_name}-${count.index}"
@@ -94,6 +108,7 @@ resource "azurerm_network_interface" "vm_nic" {
     ]
   }
 }
+
 
 # Linux Virtual Machines
 resource "azurerm_linux_virtual_machine" "vm" {
@@ -126,14 +141,16 @@ resource "azurerm_linux_virtual_machine" "vm" {
   custom_data = filebase64("cloud-init.txt")
 }
 
-# LB Backend Pool
+
+# Load Balancer Backend Pool
 resource "azurerm_lb_backend_address_pool" "bepool" {
   name                = "backend-pool"
   loadbalancer_id     = azurerm_lb.main.id
   resource_group_name = azurerm_resource_group.main.name
 }
 
-# LB Health Probe
+
+# Load Balancer Health Probe
 resource "azurerm_lb_probe" "http_probe" {
   name                = "http-probe"
   resource_group_name = azurerm_resource_group.main.name
@@ -145,7 +162,8 @@ resource "azurerm_lb_probe" "http_probe" {
   number_of_probes    = 2
 }
 
-# LB Rule to forward HTTP traffic
+
+# Load Balancer Rule (HTTP: Port 80)
 resource "azurerm_lb_rule" "http_rule" {
   name                           = "http-rule"
   resource_group_name            = azurerm_resource_group.main.name

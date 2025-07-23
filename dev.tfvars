@@ -1,3 +1,5 @@
+# Development (DEV) environment
+
 env_name = "dev"
 location = "eastus"
 vm_count = 2
