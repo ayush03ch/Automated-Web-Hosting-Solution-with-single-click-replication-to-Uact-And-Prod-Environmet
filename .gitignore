@@ -6,7 +6,6 @@
 *.tfplan
 
 # Ignore sensitive variable files
-*.tfvars
 *.tfvars.json
 
 # Crash logs
