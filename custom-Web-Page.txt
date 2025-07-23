@@ -1,0 +1,52 @@
+#cloud-config
+package_update: true
+packages:
+  - apache2
+runcmd:
+  - systemctl start apache2
+  - systemctl enable apache2
+  - |
+    cat <<EOF > /var/www/html/index.html
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Terraform Deployed VM</title>
+      <style>
+        body {
+          background-color: #121212;
+          color: #ffffff;
+          font-family: Arial, sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+        }
+        .container {
+          text-align: center;
+        }
+        h1 {
+          font-size: 3em;
+          color: #7B42BC;
+        }
+        p {
+          font-size: 1.2em;
+          color: #cccccc;
+        }
+        img {
+          width: 200px;
+          margin-bottom: 20px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <img src="https://banner2.cleanpng.com/20180823/stu/kisspng-product-design-brand-logo-font-devops-5b7f23514b4ed2.0916755415350587693085.jpg" alt="DevOps Logo" />
+        <h1>Terraform Deployed!</h1>
+        <p>This VM was automatically provisioned using Infrastructure as Code.</p>
+        <p><strong>Hostname:</strong> $(hostname)</p>
+      </div>
+    </body>
+    </html>
+    EOF
+  - systemctl restart apache2

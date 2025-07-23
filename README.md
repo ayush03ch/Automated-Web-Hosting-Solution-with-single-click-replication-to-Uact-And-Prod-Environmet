@@ -77,8 +77,8 @@ terraform destroy -var-file="dev.tfvars"
 ![Terraform Apply](screenshots/apply2.png)
 ![Terraform Output](screenshots/output.png)
 ![Apache Default Page](screenshots/webPage.png)
+> If you host a custom web page on the vm, paste the entire content of custom-Web-Page.txt in cloud-init.txt, or create your own web page
 ![Custom Page](screenshots/webPage2.png)
-If you host a custom web page on the vm
 
 
 ---
