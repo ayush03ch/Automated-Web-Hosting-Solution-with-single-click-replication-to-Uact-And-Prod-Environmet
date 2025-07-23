@@ -1,6 +1,8 @@
 # Provider Configuration
 provider "azurerm" {
   features {}
+
+  subscription_id = "Replace your actual azure subscription id inside these quotes"
 }
 
 
@@ -103,10 +105,16 @@ resource "azurerm_network_interface" "vm_nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.main.id
     private_ip_address_allocation = "Dynamic"
-    load_balancer_backend_address_pools_ids = [
-      azurerm_lb_backend_address_pool.bepool.id
-    ]
   }
+}
+
+
+# Associate NIC to backend pool
+resource "azurerm_network_interface_backend_address_pool_association" "nic_lb_assoc" {
+  count                     = var.vm_count
+  network_interface_id      = azurerm_network_interface.vm_nic[count.index].id
+  ip_configuration_name     = "internal"
+  backend_address_pool_id  = azurerm_lb_backend_address_pool.bepool.id
 }
 
 
@@ -146,14 +154,12 @@ resource "azurerm_linux_virtual_machine" "vm" {
 resource "azurerm_lb_backend_address_pool" "bepool" {
   name                = "backend-pool"
   loadbalancer_id     = azurerm_lb.main.id
-  resource_group_name = azurerm_resource_group.main.name
 }
 
 
 # Load Balancer Health Probe
 resource "azurerm_lb_probe" "http_probe" {
   name                = "http-probe"
-  resource_group_name = azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.main.id
   protocol            = "Http"
   port                = 80
@@ -166,12 +172,11 @@ resource "azurerm_lb_probe" "http_probe" {
 # Load Balancer Rule (HTTP: Port 80)
 resource "azurerm_lb_rule" "http_rule" {
   name                           = "http-rule"
-  resource_group_name            = azurerm_resource_group.main.name
   loadbalancer_id                = azurerm_lb.main.id
   protocol                       = "Tcp"
   frontend_port                  = 80
   backend_port                   = 80
   frontend_ip_configuration_name = "PublicIPAddress"
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.bepool.id
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.bepool.id]
   probe_id                       = azurerm_lb_probe.http_probe.id
 }

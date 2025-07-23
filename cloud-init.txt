@@ -6,3 +6,4 @@ runcmd:
   - systemctl start apache2
   - systemctl enable apache2
   - echo "<h1>Deployed from Terraform - ${HOSTNAME}</h1>" > /var/www/html/index.html
+  - systemctl restart apache2
