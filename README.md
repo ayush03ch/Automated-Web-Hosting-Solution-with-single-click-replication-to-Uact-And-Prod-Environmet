@@ -46,7 +46,7 @@ This project uses **Terraform** to deploy a load-balanced web server setup on **
 
 4. Apply the configuration:
     ```bash
-   terraform apply -var-file="terraform.tfvars"
+   terraform apply -var-file="dev.tfvars"
    ````
 
 5. Output the public IP of the load balancer:
@@ -58,7 +58,7 @@ This project uses **Terraform** to deploy a load-balanced web server setup on **
    ```
    http://<LoadBalancer_Public_IP>
    ```
-
+>NOTE: similarly for uact and prod environments, replace 'dev' with 'uact' or 'prod' in above steps
 ---
 
 
