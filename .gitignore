@@ -1,0 +1,25 @@
+# Ignore Terraform state
+*.tfstate
+*.tfstate.backup
+
+# Ignore Terraform plan files
+*.tfplan
+
+# Ignore sensitive variable files
+*.tfvars
+*.tfvars.json
+
+# Crash logs
+crash.log
+
+# Terraform CLI .terraform dir
+.terraform/
+
+# Local override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Provider lock file (can be ignored in teams)
+.terraform.lock.hcl
